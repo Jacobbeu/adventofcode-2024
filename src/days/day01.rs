@@ -82,7 +82,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn day01_example() {
+    fn example() {
 
         let example = 
 "3   4
@@ -97,7 +97,7 @@ mod tests {
         assert_eq!(result, 11);
     }
     #[test]
-    fn day01_example_2() {
+    fn example_2() {
 
         let example = 
 "3   4
