@@ -6,7 +6,7 @@ pub fn solve() -> SolutionPair {
     let contents = include_str!("../../input/day04_input.txt");
 
     let solution1 = xmas_word_search_2(&contents).expect("Failed to parse word search.");
-    let solution2 = 0;
+    let solution2 = an_actual_x_mas_word_search(&contents).expect("Failed to parse actual x word search");
 
     (Solution::from(solution1), Solution::from(solution2))
 }
@@ -197,44 +197,45 @@ fn an_actual_x_mas_search(token: &Token, word_search: &Vec<Vec<Token>>) -> i32 {
 
     let mut total = 0;
 
-    //check for neighboring M.M pattern
+    //          >M.M
+    // check for .A. pattern
+    //           S.S
     if check_char(token.line, token.position + 2, &'M', word_search) {
-        // Check Above for Ss
-        if check_char(token.line - 2, token.position, &'S', word_search) &&
-            check_char(token.line - 2, token.position + 2, &'S', word_search) &&
-            check_char(token.line - 1, token.position + 1, &'A', word_search) {
-            total += 1;
-        }
-
         // Check Below for Ss
         if check_char(token.line + 2, token.position, &'S', word_search) &&
             check_char(token.line + 2, token.position + 2, &'S', word_search) &&
             check_char(token.line + 1, token.position + 1, &'A', word_search) {
             total += 1;
         }
-
-        return total;
     }
 
-    //check for above M.M pattern
-    if check_char(token.line - 2, token.position, &'M', word_search) {
-        // Check for Left Ss
-        if check_char(token.line, token.position - 2, &'S', word_search) &&
-            check_char(token.line - 2, token.position - 2, &'S', word_search) &&
-            check_char(token.line - 1, token.position - 1, &'A', word_search) {
+    //           S.S
+    // check for .A. pattern
+    //          >M.M
+    if check_char(token.line, token.position + 2, &'M', word_search) {        
+        // Check Above for Ss
+        if check_char(token.line - 2, token.position, &'S', word_search) &&
+        check_char(token.line - 2, token.position + 2, &'S', word_search) &&
+        check_char(token.line - 1, token.position + 1, &'A', word_search) {
             total += 1;
         }
+    }
+
+    //          >M.S
+    // check for .A. pattern
+    //           M.S
+    if check_char(token.line + 2, token.position, &'M', word_search) {
         // Check for Right Ss
         if check_char(token.line, token.position + 2, &'S', word_search) &&
-            check_char(token.line - 2, token.position + 2, &'S', word_search) &&
-            check_char(token.line - 1, token.position + 1, &'A', word_search) {
+            check_char(token.line + 2, token.position + 2, &'S', word_search) &&
+            check_char(token.line + 1, token.position + 1, &'A', word_search) {
             total += 1;
         }
-
-        return total;
     }
 
-    //check for below M.M pattern
+    //           S.M
+    // check for .A. pattern
+    //           S.M
     if check_char(token.line + 2, token.position, &'M', word_search) {
         // Check for Left Ss
         if check_char(token.line, token.position - 2, &'S', word_search) &&
@@ -242,14 +243,6 @@ fn an_actual_x_mas_search(token: &Token, word_search: &Vec<Vec<Token>>) -> i32 {
             check_char(token.line + 1, token.position - 1, &'A', word_search) {
             total += 1;
         }
-        // Check for Right Ss
-        if check_char(token.line, token.position + 2, &'S', word_search) &&
-            check_char(token.line + 2, token.position + 2, &'S', word_search) &&
-            check_char(token.line + 1, token.position + 1, &'A', word_search) {
-            total += 1;
-        }
-
-        return total;
     }
 
     total
