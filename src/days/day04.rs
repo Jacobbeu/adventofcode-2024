@@ -19,7 +19,7 @@ struct Token {
 }
 
 impl Token {
-    fn token_exists(&self, dest_token: &Token, direction: &Direction) -> bool {
+    fn _token_exists(&self, dest_token: &Token, direction: &Direction) -> bool {
 
         let mut target_line = self.line;
         let mut target_position = self.position;
@@ -279,7 +279,7 @@ fn move_coord(coord: &(i32, i32), direction: &Direction) -> (i32, i32) {
 }
 
 // this was terribly inefficient
-fn xmas_word_search(data: &str) -> Result<i32, Box<dyn Error>> {
+fn _xmas_word_search(data: &str) -> Result<i32, Box<dyn Error>> {
 
     let mut x_tokens = Vec::new();
     let mut m_tokens = Vec::new();
@@ -307,26 +307,26 @@ fn xmas_word_search(data: &str) -> Result<i32, Box<dyn Error>> {
     }
 
     let mut total = 0;
-    total += token_search(&x_tokens, &m_tokens, &a_tokens, &s_tokens, &Direction::Forward);
-    total += token_search(&x_tokens, &m_tokens, &a_tokens, &s_tokens, &Direction::Backwards);
-    total += token_search(&x_tokens, &m_tokens, &a_tokens, &s_tokens, &Direction::Up);
-    total += token_search(&x_tokens, &m_tokens, &a_tokens, &s_tokens, &Direction::Down);
-    total += token_search(&x_tokens, &m_tokens, &a_tokens, &s_tokens, &Direction::UpLeft);
-    total += token_search(&x_tokens, &m_tokens, &a_tokens, &s_tokens, &Direction::DownLeft);
-    total += token_search(&x_tokens, &m_tokens, &a_tokens, &s_tokens, &Direction::UpRight);
-    total += token_search(&x_tokens, &m_tokens, &a_tokens, &s_tokens, &Direction::DownRight);
+    total += _token_search(&x_tokens, &m_tokens, &a_tokens, &s_tokens, &Direction::Forward);
+    total += _token_search(&x_tokens, &m_tokens, &a_tokens, &s_tokens, &Direction::Backwards);
+    total += _token_search(&x_tokens, &m_tokens, &a_tokens, &s_tokens, &Direction::Up);
+    total += _token_search(&x_tokens, &m_tokens, &a_tokens, &s_tokens, &Direction::Down);
+    total += _token_search(&x_tokens, &m_tokens, &a_tokens, &s_tokens, &Direction::UpLeft);
+    total += _token_search(&x_tokens, &m_tokens, &a_tokens, &s_tokens, &Direction::DownLeft);
+    total += _token_search(&x_tokens, &m_tokens, &a_tokens, &s_tokens, &Direction::UpRight);
+    total += _token_search(&x_tokens, &m_tokens, &a_tokens, &s_tokens, &Direction::DownRight);
 
     Ok(total)
 }
 
 // this was terribly inefficient
-fn token_search(x_tokens: &Vec<Token>, m_tokens: &Vec<Token>, a_tokens: &Vec<Token>, s_tokens: &Vec<Token>, direction: &Direction) -> i32 {
+fn _token_search(x_tokens: &Vec<Token>, m_tokens: &Vec<Token>, a_tokens: &Vec<Token>, s_tokens: &Vec<Token>, direction: &Direction) -> i32 {
 
     let mut x_matches = Vec::new();
 
     for x in x_tokens {
         for m in m_tokens {
-            if x.token_exists(m, direction) {
+            if x._token_exists(m, direction) {
                 x_matches.push(m);
             }
         }
@@ -336,7 +336,7 @@ fn token_search(x_tokens: &Vec<Token>, m_tokens: &Vec<Token>, a_tokens: &Vec<Tok
 
     for m in x_matches {
         for a in a_tokens {
-            if m.token_exists(a, direction) {
+            if m._token_exists(a, direction) {
                 m_matches.push(a);
             }
         }
@@ -346,7 +346,7 @@ fn token_search(x_tokens: &Vec<Token>, m_tokens: &Vec<Token>, a_tokens: &Vec<Tok
 
     for a in m_matches {
         for s in s_tokens {
-            if a.token_exists(s, direction) {
+            if a._token_exists(s, direction) {
                 a_matches.push(s);
             }
         }
@@ -373,15 +373,15 @@ mod tests {
         let x8 = Token { letter: 'X', line: 4, position: 11 };
         let x9 = Token { letter: 'X', line: 6, position: 11 };
 
-        assert_eq!(x0.token_exists(&x1, &Direction::Forward), false);
-        assert_eq!(x0.token_exists(&x2, &Direction::Forward), true);
-        assert_eq!(x0.token_exists(&x3, &Direction::Backwards), true);
-        assert_eq!(x0.token_exists(&x4, &Direction::Up), true);
-        assert_eq!(x0.token_exists(&x5, &Direction::Down), true);
-        assert_eq!(x0.token_exists(&x6, &Direction::UpLeft), true);
-        assert_eq!(x0.token_exists(&x7, &Direction::DownLeft), true);
-        assert_eq!(x0.token_exists(&x8, &Direction::UpRight), true);
-        assert_eq!(x0.token_exists(&x9, &Direction::DownRight), true);
+        assert_eq!(x0._token_exists(&x1, &Direction::Forward), false);
+        assert_eq!(x0._token_exists(&x2, &Direction::Forward), true);
+        assert_eq!(x0._token_exists(&x3, &Direction::Backwards), true);
+        assert_eq!(x0._token_exists(&x4, &Direction::Up), true);
+        assert_eq!(x0._token_exists(&x5, &Direction::Down), true);
+        assert_eq!(x0._token_exists(&x6, &Direction::UpLeft), true);
+        assert_eq!(x0._token_exists(&x7, &Direction::DownLeft), true);
+        assert_eq!(x0._token_exists(&x8, &Direction::UpRight), true);
+        assert_eq!(x0._token_exists(&x9, &Direction::DownRight), true);
     }
 
     #[test]
