@@ -1,8 +1,6 @@
 use crate::{Solution, SolutionPair};
 
 pub fn solve() -> SolutionPair {
-
-
     let contents = include_str!("../../input/day07_input.txt");
 
     let solution1 = calibrate(&contents);
@@ -12,7 +10,6 @@ pub fn solve() -> SolutionPair {
 }
 
 fn calibrate(data: &str) -> usize {
-
     let calibration_tests: Vec<Vec<usize>> = 
         data.lines()
         .map(|line| parse_line(line))
@@ -26,7 +23,6 @@ fn calibrate(data: &str) -> usize {
 }
 
 fn calibrate_line(data: &Vec<usize>) -> usize {
-
     if data.len() < 2 {
         return 0;
     }
@@ -96,9 +92,7 @@ fn calibrate_line(data: &Vec<usize>) -> usize {
     0
 }
 
-
 fn calibrate_2(data: &str) -> usize {
-
     let calibration_tests: Vec<Vec<usize>> = 
         data.lines()
         .map(|line| parse_line(line))
@@ -112,7 +106,6 @@ fn calibrate_2(data: &str) -> usize {
 }
 
 fn calibrate_line_2(data: &Vec<usize>) -> usize {
-
     if data.len() < 2 {
         return 0;
     }
@@ -150,8 +143,6 @@ fn calibrate_line_2(data: &Vec<usize>) -> usize {
 
         // loop the remaining operators
         while operator_counter < operators.len() {
-
-            let prev_value = product;
             if operators[operator_counter] == 0 {
                 product += data[data_counter];
             }
