@@ -1,20 +1,112 @@
 use crate::{Solution, SolutionPair};
-use std::fs::read_to_string;
 
 pub fn solve() -> SolutionPair {
 
-    let contents = read_to_string("input/day01_input.txt").expect("failed to parse input file");
 
-    let mut lines = contents.lines();
+    let contents = include_str!("../../input/day07_input.txt");
 
-    while let Some(_line) = lines.next() {
-
-    }
-
-    let solution1 = 0;
+    let solution1 = calibrate(&contents);
     let solution2 = 0;
 
     (Solution::from(solution1), Solution::from(solution2))
+}
+
+fn calibrate(data: &str) -> usize {
+
+    let calibration_tests: Vec<Vec<usize>> = 
+        data.lines()
+        .map(|line| parse_line(line))
+        .collect();
+
+    let result: usize = calibration_tests.iter()
+        .map(|line| calibrate_line(line))
+        .sum();
+
+    result
+}
+
+fn calibrate_line(data: &Vec<usize>) -> usize {
+
+    if data.len() < 2 {
+        return 0;
+    }
+
+    let result = data[0];
+
+    if data.len() == 2 {
+        if data[0] == data[1] {
+            return data[0];
+        }
+        else {
+            return 0;
+        }
+    }
+
+    let mut operators = vec![0; data.len() - 2];
+
+    loop {
+        let mut operator_counter = 1;
+        let mut data_counter = 3;
+
+        let mut product = 0;
+
+        // init product
+        if operators[0] == 0 {
+            product += data[1] + data[2];
+        }
+        else {
+            product += data[1] * data[2];
+        }
+
+        // loop the remaining operators
+        while operator_counter < operators.len() {
+
+            if operators[operator_counter] == 0 {
+                product += data[data_counter];
+            }
+            else {
+                product *= data[data_counter];
+            }
+
+            operator_counter += 1;
+            data_counter += 1;
+        }
+
+        if product == result {
+            return result;
+        }
+
+        if operators.iter().all(|&item| item == 1) {
+            break;
+        }
+
+        let mut operator_idx = 0;
+        loop {
+            if operators[operator_idx] == 0 {
+                operators[operator_idx] = 1;
+                break;
+            }
+            else {
+                operators[operator_idx] = 0;
+                operator_idx += 1;
+            }
+        }
+    }
+
+    0
+}
+
+fn parse_line(data: &str) -> Vec<usize> {
+
+    let mut segments = data.split(" ");
+
+    let mut result = Vec::new();
+    while let Some(segment) = segments.next() {
+        let segment = segment.replace(":", "");
+        result.push(segment.parse::<usize>().expect("Failed to parse line"));
+    }
+
+    result
 }
 
 #[cfg(test)]
@@ -22,7 +114,35 @@ mod tests {
     use super::*;
 
     #[test]
-    fn day07_example() {
-        let _ = solve();
+    fn parse_line_test() {
+        let example = "1234: 1 12 13";
+
+        let result = parse_line(&example);
+
+        assert_eq!(result, vec![1234, 1, 12, 13]);
+    }
+
+    #[test]
+    fn calibrate_line_test() {
+        let good_example = parse_line("3267: 81 40 27");
+        let good_example2 = parse_line("9282: 27 45 19 102");
+        let bad_example = parse_line("1234: 1 12 13");
+
+        let good_result = calibrate_line(&good_example);
+        let good_result2 = calibrate_line(&good_example2);
+        let bad_result = calibrate_line(&bad_example);
+
+        assert_eq!(good_result, 3267);
+        assert_eq!(good_result2, 9282);
+        assert_eq!(bad_result, 0);
+    }
+
+    #[test]
+    fn day06_example() {
+        let example = include_str!("../../samples/day07_sample.txt");
+
+        let result = calibrate(&example);
+
+        assert_eq!(result, 3749);
     }
 }
