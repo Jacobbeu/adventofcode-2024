@@ -1,20 +1,120 @@
 use crate::{Solution, SolutionPair};
-use std::fs::read_to_string;
 
 pub fn solve() -> SolutionPair {
+    let contents = include_str!("../../input/day10_input.txt");
 
-    let contents = read_to_string("input/day01_input.txt").expect("failed to parse input file");
-
-    let mut lines = contents.lines();
-
-    while let Some(_line) = lines.next() {
-
-    }
-
-    let solution1 = 0;
+    let solution1 = calulate_trailhead_score(&contents);
     let solution2 = 0;
 
     (Solution::from(solution1), Solution::from(solution2))
+}
+
+struct Map {
+    width: usize,
+    height: usize,
+    points: Vec<Point>,
+}
+
+#[derive(Debug, PartialEq)]
+struct Point {
+    x: usize,
+    y: usize,
+    height: usize,
+}
+
+fn parse_map(data: &str) -> Map {
+
+    let width = data.lines().next().unwrap().len();
+    let height = data.lines().count();
+
+    let points: Vec<Point> = 
+        data.lines()
+        .enumerate()
+        .fold(Vec::new(), |mut output, (y, line)| {
+            let mut row_of_points: Vec<Point> = 
+                line.chars()
+                .enumerate()
+                .map(|(x, letter)| {
+                    let height = letter.to_string().parse::<usize>().expect("NaN found");
+                    Point { x, y, height }
+                })
+                .collect();
+
+            output.append(&mut row_of_points);
+            output
+        });
+
+    Map { width, height, points }
+}
+
+fn calulate_trailhead_score(data: &str) -> usize {
+    
+    let topo_map = parse_map(data);
+    let trailheads: Vec<&Point> =
+        topo_map.points.iter()
+        .filter(|point| point.height == 0)
+        .collect();
+
+    trailheads
+        .iter()
+        .map(|point| walk_paths(&topo_map, point, &mut Vec::new()).iter().count())
+        .sum()
+}
+
+fn walk_paths<'a>(topo_map: &'a Map, starting_point: &Point, acc: &mut Vec<&'a Point>) -> Vec<&'a Point> {
+    // look north
+    if starting_point.y != 0 {
+        if let Some(north_point) = topo_map.points.iter().find(|point| point.x == starting_point.x && point.y == starting_point.y - 1 && point.height == starting_point.height + 1) {
+            if north_point.height == 9 {
+                if !acc.contains(&north_point) {
+                    acc.push(north_point);
+                }
+            }
+            else {
+                *acc = walk_paths(topo_map, north_point, acc);
+            }
+        }
+    }
+
+    // look south
+    if let Some(south_point) = topo_map.points.iter().find(|point| point.x == starting_point.x && point.y == starting_point.y + 1 && point.height == starting_point.height + 1) {
+        if south_point.height == 9 {
+            if !acc.contains(&south_point) {
+                acc.push(south_point);
+            }
+        }
+        else {
+            *acc = walk_paths(topo_map, south_point, acc);
+        }
+    }
+
+    // look west
+    if starting_point.x != 0 {
+        if let Some(west_point) = topo_map.points.iter().find(|point| point.x == starting_point.x - 1 && point.y == starting_point.y && point.height == starting_point.height + 1) {
+            if west_point.height == 9 {
+                if !acc.contains(&west_point) {
+                    acc.push(west_point);
+                }
+            }
+            else {
+                *acc = walk_paths(topo_map, west_point, acc);
+            }
+        }
+    }
+
+    // look east
+    if let Some(east_point) = topo_map.points.iter().find(|point| point.x == starting_point.x + 1 && point.y == starting_point.y && point.height == starting_point.height + 1) {
+        if east_point.height == 9 {
+            if !acc.contains(&east_point) {
+                acc.push(east_point);
+            }
+        }
+        else {
+            *acc = walk_paths(topo_map, east_point, acc);
+        }
+    }
+
+    acc.to_vec()
 }
 
 #[cfg(test)]
@@ -23,6 +123,10 @@ mod tests {
 
     #[test]
     fn day10_example() {
-        let _ = solve();
+        let example = include_str!("../../samples/day10_sample.txt");
+
+        let result = calulate_trailhead_score(&example);
+
+        assert_eq!(result, 36);
     }
 }
