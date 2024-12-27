@@ -9,8 +9,6 @@ pub fn solve() -> SolutionPair {
 }
 
 struct Map {
-    width: usize,
-    height: usize,
     points: Vec<Point>,
 }
 
@@ -22,10 +20,6 @@ struct Point {
 }
 
 fn parse_map(data: &str) -> Map {
-
-    let width = data.lines().next().unwrap().len();
-    let height = data.lines().count();
-
     let points: Vec<Point> = 
         data.lines()
         .enumerate()
@@ -43,7 +37,7 @@ fn parse_map(data: &str) -> Map {
             output
         });
 
-    Map { width, height, points }
+    Map { points }
 }
 
 fn calulate_trailhead_score(data: &str) -> (usize, usize) {
@@ -141,7 +135,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn day10_example() {
+    fn example() {
         let example = include_str!("../../samples/day10_sample.txt");
 
         let result = calulate_trailhead_score(&example);
