@@ -3,10 +3,9 @@ use crate::{Solution, SolutionPair};
 pub fn solve() -> SolutionPair {
     let contents = include_str!("../../input/day10_input.txt");
 
-    let solution1 = calulate_trailhead_score(&contents);
-    let solution2 = 0;
+    let result = calulate_trailhead_score(&contents);
 
-    (Solution::from(solution1), Solution::from(solution2))
+    (Solution::from(result.0), Solution::from(result.1))
 }
 
 struct Map {
@@ -47,7 +46,7 @@ fn parse_map(data: &str) -> Map {
     Map { width, height, points }
 }
 
-fn calulate_trailhead_score(data: &str) -> usize {
+fn calulate_trailhead_score(data: &str) -> (usize, usize) {
     
     let topo_map = parse_map(data);
     let trailheads: Vec<&Point> =
@@ -55,13 +54,21 @@ fn calulate_trailhead_score(data: &str) -> usize {
         .filter(|point| point.height == 0)
         .collect();
 
-    trailheads
+    let result: Vec::<(usize, usize)> = 
+        trailheads
         .iter()
-        .map(|point| walk_paths(&topo_map, point, &mut Vec::new()).iter().count())
-        .sum()
+        .map(|point| {
+            let ret_val = walk_paths(&topo_map, point, &mut Vec::new());
+            (ret_val.0.iter().count(), ret_val.1)
+        })
+        .collect();
+
+    (result.iter().map(|r|r.0).sum(), result.iter().map(|r|r.1).sum())
 }
 
-fn walk_paths<'a>(topo_map: &'a Map, starting_point: &Point, acc: &mut Vec<&'a Point>) -> Vec<&'a Point> {
+fn walk_paths<'a>(topo_map: &'a Map, starting_point: &Point, acc: &mut Vec<&'a Point>) -> (Vec<&'a Point>, usize) {
+
+    let mut total = 0;
     // look north
     if starting_point.y != 0 {
         if let Some(north_point) = topo_map.points.iter().find(|point| point.x == starting_point.x && point.y == starting_point.y - 1 && point.height == starting_point.height + 1) {
@@ -69,9 +76,12 @@ fn walk_paths<'a>(topo_map: &'a Map, starting_point: &Point, acc: &mut Vec<&'a P
                 if !acc.contains(&north_point) {
                     acc.push(north_point);
                 }
+                total += 1;
             }
             else {
-                *acc = walk_paths(topo_map, north_point, acc);
+                let ret_val = walk_paths(topo_map, north_point, acc);
+                *acc = ret_val.0;
+                total += ret_val.1;
             }
         }
     }
@@ -82,9 +92,12 @@ fn walk_paths<'a>(topo_map: &'a Map, starting_point: &Point, acc: &mut Vec<&'a P
             if !acc.contains(&south_point) {
                 acc.push(south_point);
             }
+            total += 1;
         }
         else {
-            *acc = walk_paths(topo_map, south_point, acc);
+            let ret_val = walk_paths(topo_map, south_point, acc);
+            *acc = ret_val.0;
+            total += ret_val.1;
         }
     }
 
@@ -95,9 +108,12 @@ fn walk_paths<'a>(topo_map: &'a Map, starting_point: &Point, acc: &mut Vec<&'a P
                 if !acc.contains(&west_point) {
                     acc.push(west_point);
                 }
+                total += 1;
             }
             else {
-                *acc = walk_paths(topo_map, west_point, acc);
+                let ret_val = walk_paths(topo_map, west_point, acc);
+                *acc = ret_val.0;
+                total += ret_val.1;
             }
         }
     }
@@ -108,13 +124,16 @@ fn walk_paths<'a>(topo_map: &'a Map, starting_point: &Point, acc: &mut Vec<&'a P
             if !acc.contains(&east_point) {
                 acc.push(east_point);
             }
+            total += 1;
         }
         else {
-            *acc = walk_paths(topo_map, east_point, acc);
+            let ret_val = walk_paths(topo_map, east_point, acc);
+            *acc = ret_val.0;
+            total += ret_val.1;
         }
     }
 
-    acc.to_vec()
+    (acc.to_vec(), total)
 }
 
 #[cfg(test)]
@@ -127,6 +146,7 @@ mod tests {
 
         let result = calulate_trailhead_score(&example);
 
-        assert_eq!(result, 36);
+        assert_eq!(result.0, 36);
+        assert_eq!(result.1, 81);
     }
 }
